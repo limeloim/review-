@@ -14,7 +14,6 @@ type Store struct { //Новая структура db *sql.DB подтаски�
 
 func initDB(dbPath string) (*Store, error) { //Инициализация базы данных что бы это ни значело Принимает патч в праметры Возвращает ссылку на
 	db, err := sql.Open("sqlite", dbPath)
-
 	if err != nil { //НЕ ВАЖНО
 		fmt.Println(err)
 		return nil, err
@@ -30,7 +29,6 @@ func initDB(dbPath string) (*Store, error) { //Инициализация баз
 }
 
 func createGopherTable(db *sql.DB) error { //SQL таблицу тут создадим поидее
-
 	createTableSQL := `
 	CREATE TABLE IF NOT EXISTS gophers (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,9 +38,8 @@ func createGopherTable(db *sql.DB) error { //SQL таблицу тут созд�
 	);`
 
 	_, err := db.Exec(createTableSQL) //отправляем строку в базу данных
-
 	if err != nil {
-		log.Fatalf("failed to create table: %v", err)
+		err = fmt.Errorf("create gophers table: %w", err) //Передача ошибки наверх %w заполниится err
 		return err
 	}
 	log.Printf("Table 'gophers' created.")
@@ -50,7 +47,6 @@ func createGopherTable(db *sql.DB) error { //SQL таблицу тут созд�
 }
 
 func (s *Store) insertGopher(g *Gopher) (int64, error) { //CREATE Принимает гофера из запроса к серверу
-
 	name := g.Name
 	email := g.Email
 	age := g.Age
@@ -102,12 +98,9 @@ func (s *Store) selectAllGophers() ([]*Gopher, error) { //На вход прин
 	}
 
 	return gophers, nil
-	//
-	//и прочая логика работы с бд
 }
 
 func (s *Store) update(id int, g *Gopher) error { //принимаем новые данные гофера по адресу
-	//айди не нужно задавать оно уже пришло
 	name := g.Name
 	email := g.Email
 	age := g.Age
