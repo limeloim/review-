@@ -54,7 +54,8 @@ func (s *Store) insertGopher(g *Gopher) (int64, error) { //CREATE Принима
 	insertSQL := `INSERT INTO gophers (name, email, age) VALUES (?, ?, ?);`
 	res, err := s.db.Exec(insertSQL, name, email, age)
 	if err != nil {
-		log.Fatalf("failed to insert: %v", err)
+		err = fmt.Errorf("insertGopher: %w", err)
+		return 0, err
 	}
 
 	id, err := res.LastInsertId()
@@ -71,7 +72,8 @@ func (s *Store) selectAllGophers() ([]*Gopher, error) { //На вход прин
 	rows, err := s.db.Query(selectAllSQL) //он из s достает db и метод Query делает
 
 	if err != nil {
-		log.Fatalf("failed to insert: %v", err)
+		err = fmt.Errorf("failed to insert: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -118,7 +120,8 @@ func (s *Store) delete(id int) error {
 	deleteSQL := `DELETE FROM gophers WHERE id = ?;`
 	_, err := s.db.Exec(deleteSQL, id)
 	if err != nil {
-		log.Fatalf("failed to update: %v", err)
+		err = fmt.Errorf("failed to update: %w", err)
+		return err
 	}
 	return nil
 }
