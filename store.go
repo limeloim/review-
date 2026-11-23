@@ -84,7 +84,8 @@ func (s *Store) selectAllGophers() ([]*Gopher, error) { //На вход прин
 		var age, id int
 		err := rows.Scan(&id, &name, &email, &age)
 		if err != nil {
-			log.Fatal(err)
+			err = fmt.Errorf("failed to update: %w", err)
+			return nil, err
 		}
 		//Тут нужно создать суслика со сканированными данными поместить в []*Gopher,
 		gophers = append(gophers, &Gopher{
@@ -110,8 +111,8 @@ func (s *Store) update(id int, g *Gopher) error { //принимаем новы�
 	updateSQL := `UPDATE gophers SET name = ?, email = ?, age = ? WHERE id = ?;`
 	_, err := s.db.Exec(updateSQL, name, email, age, id)
 	if err != nil {
-
-		log.Fatalf("failed to update: %v", err)
+		err = fmt.Errorf("failed to update: %w", err)
+		return err
 	}
 	return nil
 }
